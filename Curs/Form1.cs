@@ -1,24 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Security.Policy;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Windows.Forms.VisualStyles;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TreeView;
-
 namespace Curs
 {
     public partial class Form1 : Form
     {
         int n;
-        bool flag;
-        static List<int> tr = new List<int>();
         public Form1()
         {
             InitializeComponent();
@@ -29,6 +17,7 @@ namespace Curs
             actionButton.Enabled = false;
             createTable.Enabled = false;
             button1.Enabled = false;
+            alg.SelectedIndex = 0;
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
@@ -45,24 +34,6 @@ namespace Curs
                 button1.Enabled = true;
                 actionButton.Enabled = false;
             } 
-        }
-
-        private void label1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-
-        }
-        private void numericCountGuests_ValueChanged(object sender, EventArgs e)
-        {
-            
-        }
-        private void answerSpace_TextChanged(object sender, EventArgs e)
-        {
-
         }
         private void DGV_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
         {
@@ -173,14 +144,39 @@ namespace Curs
                     graph.addEdge(i, j, Convert.ToInt32(DGV.Rows[i - 1].Cells[j - 1].Value));
                 }
             }
-            answerSpace.Text = Convert.ToString(graph.tsp().weight + " | Way:");
-            for(int i = tr.Count-4; i < tr.Count; i++)
+            if (alg.SelectedIndex == 0)
             {
-                answerSpace.Text += Convert.ToString(tr[i] + "-");
+                answerSpace.Text = Convert.ToString(graph.tsp().weight + " | Way:");
+                for (int i = graph.tr.Count - n; i < graph.tr.Count; i++)
+                {
+                    answerSpace.Text += Convert.ToString(graph.tr[i] + "-");
+                }
+                answerSpace.Text += Convert.ToString(graph.tr[graph.tr.Count - n]);
+                graph.tr.Clear();
+            }
+            if (alg.SelectedIndex == 1)
+            {
+                List<int> temp = new List<int>();
+                int max = 0;
+                for (int i = 0; i < n; i++)
+                {
+                    if (max < graph.findMaxRoute(i)[n])
+                    { 
+                        max = graph.findMaxRoute(i)[n];
+                        temp = graph.findMaxRoute(i).GetRange(0, n);
+                    }
+                }
+                answerSpace.Text = Convert.ToString(max + " | Way:");
+                for (int i = 0; i < temp.Count; i++)
+                {
+                    answerSpace.Text += Convert.ToString(temp[i] + 1 + "-");
+                }
+                answerSpace.Text += Convert.ToString(temp[0] + 1);
             }
         }
         class Graph
         {
+            public List<int> tr = new List<int>();
             int[] vertices;
             int size;
             int[,] edges;
@@ -198,7 +194,7 @@ namespace Curs
             public Route tsp() // функция, которая обходит вершины и возвращает тот путь, который стоит меньше всего
             {
                 HashSet<int> seen = new HashSet<int>(); // множество, в котором хранятся пройденные вершины
-                Route min = null; // переменная, которая хранит минимальный путь 
+                Route max = null; // переменная, которая хранит минимальный путь 
                 Action<int, Route> bruteforce = null; // делегат
                 bruteforce = new Action<int, Route>((i, current) => // внутренняя рекурсивная функция. 
                                                                     // В качестве параметров принимает: индекс следующей вершины, уже построенный маршрут.
@@ -206,14 +202,14 @@ namespace Curs
                     seen.Add(i); // добавляем вершину, от которой начинается обход
                     if (count(seen) == size) // если мы обошли все вершины
                     {
-                        int weight = edges[i, 0]; // проверяем наличие дароги в стартовую вершину
+                        int weight = edges[i, seen.First()]; // проверяем наличие дароги в стартовую вершину
                         if (weight != 0) // если обход вершин замкнутый
                         {
-                            Route route = current.add(vertices[0], edges[i, 0]);
+                            Route route = current.add(vertices[seen.First()], edges[i, seen.First()]);
                             // добавляем замыкающую вершину в переменную с патенциальным минимальным путем
-                            if (min == null || min.weight > route.weight) // если минимум еще не определен или он больше нового минимума
+                            if (max == null || max.weight < route.weight) // если минимум еще не определен или он больше нового минимума
                             {
-                                min = route; // переопределяем минимум
+                                max = route; // переопределяем минимум
                                 foreach (int k in seen)
                                 {
                                     tr.Add(k+1); 
@@ -237,22 +233,28 @@ namespace Curs
                     seen.Remove(i); // удаляем последнюю вершину 
                 });
                 int[] v = { vertices[0] };
-                bruteforce(0, new Route(v, 0)); // вызываем рекурсивную функцию
-                return min; // ответ
+                for (int k = 0; k < size; k++)
+                {
+                    bruteforce(k, new Route(v, 0)); // вызываем рекурсивную функцию
+                }
+                return max; // ответ
             }
-            static void findMaxRoute(int[,] tsp, int fGuest)
+            public List<int> findMaxRoute(int fGuest)
             {
                 int sum = 0;
                 int counter = 0;
                 int j = 0, i = fGuest;
                 int max = 0;
-                List<int> visitedRouteList = [fGuest];
-                int[] route = new int[tsp.Length];
-
-                while (i < tsp.GetLength(0) &&
-                    j < tsp.GetLength(1))
+                List<int> visitedRouteList = new List<int>
                 {
-                    if (counter >= tsp.GetLength(0) - 1)
+                    fGuest
+                };
+                int[] route = new int[edges.Length];
+
+                while (i < edges.GetLength(0) &&
+                    j < edges.GetLength(1))
+                {
+                    if (counter >= edges.GetLength(0) - 1)
                     {
                         break;
                     }
@@ -260,15 +262,15 @@ namespace Curs
                     if (j != i &&
                         !visitedRouteList.Contains(j))
                     {
-                        if (tsp[i, j] > max)
+                        if (edges[i, j] > max)
                         {
-                            max = tsp[i, j];
+                            max = edges[i, j];
                             route[counter] = j + 1;
                         }
                     }
                     j++;
 
-                    if (j == tsp.GetLength(0))
+                    if (j == edges.GetLength(0))
                     {
                         sum += max;
                         max = 0;
@@ -279,16 +281,9 @@ namespace Curs
                         counter++;
                     }
                 }
-                i = route[counter - 1] - 1;
-
-                sum += tsp[visitedRouteList[tsp.GetLength(0) - 1], visitedRouteList[0]];
-                foreach (int k in visitedRouteList)
-                {
-                    Console.WriteLine(k + 1);
-                }
-                Console.Write("Minimum Cost is : ");
-                Console.WriteLine(sum);
-                //return sum;
+                sum += edges[visitedRouteList[edges.GetLength(0) - 1], visitedRouteList[0]];
+                visitedRouteList.Add(sum);
+                return visitedRouteList;
             }
             int count(HashSet<int> seen) // длина множества
             {
@@ -302,7 +297,7 @@ namespace Curs
         }
         class Route // класс, который хранит суммарную длину пути и список вершин, который алгоритм успел пройти.
         {
-            int[] vertices; // вершины, которые успели обойти 
+            public int[] vertices; // вершины, которые успели обойти 
             public int weight; // сколько стоило нам обойти вершины
             public Route(int[] vertices, int weight) // конструктор, который в впоследствии переопределяет vertices и weight. 
             {

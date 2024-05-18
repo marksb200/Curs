@@ -38,6 +38,8 @@
             this.createTable = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.numericCountGuests = new System.Windows.Forms.NumericUpDown();
+            this.alg = new System.Windows.Forms.ComboBox();
+            this.label4 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.DGV)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericCountGuests)).BeginInit();
             this.SuspendLayout();
@@ -49,7 +51,7 @@
             this.mode.Items.AddRange(new object[] {
             "Автозаполнение",
             "Ввод в ручную"});
-            this.mode.Location = new System.Drawing.Point(895, 92);
+            this.mode.Location = new System.Drawing.Point(892, 133);
             this.mode.Name = "mode";
             this.mode.Size = new System.Drawing.Size(143, 24);
             this.mode.TabIndex = 0;
@@ -58,17 +60,16 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(892, 63);
+            this.label1.Location = new System.Drawing.Point(889, 104);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(146, 16);
             this.label1.TabIndex = 1;
             this.label1.Text = "Режим ввода данных:";
-            this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(892, 133);
+            this.label2.Location = new System.Drawing.Point(889, 174);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(135, 16);
             this.label2.TabIndex = 3;
@@ -85,7 +86,6 @@
             this.DGV.RowTemplate.Height = 24;
             this.DGV.Size = new System.Drawing.Size(874, 409);
             this.DGV.TabIndex = 4;
-            this.DGV.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
             this.DGV.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.DGV_CellValidating);
             // 
             // actionButton
@@ -104,7 +104,6 @@
             this.answerSpace.Name = "answerSpace";
             this.answerSpace.Size = new System.Drawing.Size(494, 22);
             this.answerSpace.TabIndex = 6;
-            this.answerSpace.TextChanged += new System.EventHandler(this.answerSpace_TextChanged);
             // 
             // label3
             // 
@@ -117,7 +116,7 @@
             // 
             // createTable
             // 
-            this.createTable.Location = new System.Drawing.Point(895, 205);
+            this.createTable.Location = new System.Drawing.Point(892, 246);
             this.createTable.Name = "createTable";
             this.createTable.Size = new System.Drawing.Size(94, 43);
             this.createTable.TabIndex = 8;
@@ -127,7 +126,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(895, 254);
+            this.button1.Location = new System.Drawing.Point(892, 295);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(95, 55);
             this.button1.TabIndex = 9;
@@ -137,7 +136,7 @@
             // 
             // numericCountGuests
             // 
-            this.numericCountGuests.Location = new System.Drawing.Point(895, 165);
+            this.numericCountGuests.Location = new System.Drawing.Point(892, 206);
             this.numericCountGuests.Maximum = new decimal(new int[] {
             10,
             0,
@@ -156,13 +155,35 @@
             0,
             0,
             0});
-            this.numericCountGuests.ValueChanged += new System.EventHandler(this.numericCountGuests_ValueChanged);
+            // 
+            // alg
+            // 
+            this.alg.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.alg.FormattingEnabled = true;
+            this.alg.Items.AddRange(new object[] {
+            "Полный перебор",
+            "Жадный алгоритм"});
+            this.alg.Location = new System.Drawing.Point(892, 67);
+            this.alg.Name = "alg";
+            this.alg.Size = new System.Drawing.Size(143, 24);
+            this.alg.TabIndex = 11;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(893, 34);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(73, 16);
+            this.label4.TabIndex = 12;
+            this.label4.Text = "Алгоритм:";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1067, 554);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.alg);
             this.Controls.Add(this.numericCountGuests);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.createTable);
@@ -196,6 +217,8 @@
         private System.Windows.Forms.Button createTable;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.NumericUpDown numericCountGuests;
+        private System.Windows.Forms.ComboBox alg;
+        private System.Windows.Forms.Label label4;
     }
 }
 
