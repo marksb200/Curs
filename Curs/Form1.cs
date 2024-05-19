@@ -65,6 +65,13 @@ namespace Curs
                         actionButton.Enabled = false;
                         break;
                     }
+                    if (Convert.ToInt32(DGV.Rows[i - 1].Cells[j - 1].Value) != Convert.ToInt32(DGV.Rows[j - 1].Cells[i - 1].Value)) 
+                    {
+                        flag = true;
+                        MessageBox.Show("Между двумя гостями должна быть одинаковая психологическая совместимость!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                        actionButton.Enabled = false;
+                        break;
+                    }
                     else
                     {
                         actionButton.Enabled = true;
@@ -191,25 +198,23 @@ namespace Curs
                 edges[row - 1, column - 1] = weight;
                 edges[column - 1, row - 1] = weight;
             }
-            public Route tsp() // функция, которая обходит вершины и возвращает тот путь, который стоит меньше всего
+            public Route tsp()
             {
-                HashSet<int> seen = new HashSet<int>(); // множество, в котором хранятся пройденные вершины
-                Route max = null; // переменная, которая хранит минимальный путь 
-                Action<int, Route> bruteforce = null; // делегат
-                bruteforce = new Action<int, Route>((i, current) => // внутренняя рекурсивная функция. 
-                                                                    // В качестве параметров принимает: индекс следующей вершины, уже построенный маршрут.
+                HashSet<int> seen = new HashSet<int>(); 
+                Route max = null;
+                Action<int, Route> bruteforce = null;
+                bruteforce = new Action<int, Route>((i, current) => 
                 {
-                    seen.Add(i); // добавляем вершину, от которой начинается обход
-                    if (count(seen) == size) // если мы обошли все вершины
+                    seen.Add(i); 
+                    if (count(seen) == size)
                     {
-                        int weight = edges[i, seen.First()]; // проверяем наличие дароги в стартовую вершину
-                        if (weight != 0) // если обход вершин замкнутый
+                        int weight = edges[i, seen.First()];
+                        if (weight != 0) 
                         {
                             Route route = current.add(vertices[seen.First()], edges[i, seen.First()]);
-                            // добавляем замыкающую вершину в переменную с патенциальным минимальным путем
-                            if (max == null || max.weight < route.weight) // если минимум еще не определен или он больше нового минимума
+                            if (max == null || max.weight < route.weight)
                             {
-                                max = route; // переопределяем минимум
+                                max = route;
                                 foreach (int k in seen)
                                 {
                                     tr.Add(k+1); 
@@ -219,25 +224,24 @@ namespace Curs
                     }
                     else
                     {
-                        for (int j = 0; j < edges.GetLength(0); j += 1) // перебираем возможные пути от вершины i 
+                        for (int j = 0; j < edges.GetLength(0); j += 1) 
                         {
-                            int weight = edges[i, j]; // стоимость дороги от i-ой вершины до j-ой (путь от i-ой до j-ой = i-ой = 0)
+                            int weight = edges[i, j];
                             if (weight != 0 && !seen.TryGetValue(j, out int actualValue))
-                            // проверяем, что не идем в туже вершину или в вершину, которую обходили ранее
                             {
-                                Route route = current.add(vertices[j], weight); // переменная, которая хранит путь с новой вершиной
-                                bruteforce(j, route); // ныряем в рекурсию, передаваяя ей новую вершину и путь
+                                Route route = current.add(vertices[j], weight);
+                                bruteforce(j, route); 
                             }
                         }
                     }
-                    seen.Remove(i); // удаляем последнюю вершину 
+                    seen.Remove(i);
                 });
                 int[] v = { vertices[0] };
                 for (int k = 0; k < size; k++)
                 {
-                    bruteforce(k, new Route(v, 0)); // вызываем рекурсивную функцию
+                    bruteforce(k, new Route(v, 0)); 
                 }
-                return max; // ответ
+                return max; 
             }
             public List<int> findMaxRoute(int fGuest)
             {
@@ -285,7 +289,7 @@ namespace Curs
                 visitedRouteList.Add(sum);
                 return visitedRouteList;
             }
-            int count(HashSet<int> seen) // длина множества
+            int count(HashSet<int> seen) 
             {
                 int counter = 0;
                 foreach (int k in seen)
@@ -295,22 +299,21 @@ namespace Curs
                 return counter;
             }
         }
-        class Route // класс, который хранит суммарную длину пути и список вершин, который алгоритм успел пройти.
+        class Route
         {
-            public int[] vertices; // вершины, которые успели обойти 
-            public int weight; // сколько стоило нам обойти вершины
-            public Route(int[] vertices, int weight) // конструктор, который в впоследствии переопределяет vertices и weight. 
+            public int[] vertices; 
+            public int weight;
+            public Route(int[] vertices, int weight) 
             {
                 this.vertices = vertices;
                 this.weight = weight;
             }
-            public Route add(int vertex, int incWeight) // метод, который обновляет vertices и добавляет к weight новые веса. 
-                                                        //vertex - вершина, incWeight - вес.
+            public Route add(int vertex, int incWeight) 
             {
-                int[] nextVertices = new int[1]; // массив под след. вершину
-                nextVertices.Append(vertex).ToArray(); // добавляем следующую вершину
-                int nextWeight = weight + incWeight; // прибавляем вес от старой вершины до следующей к уже подсчитанным весам
-                return new Route(nextVertices, nextWeight); // возращаем объект класса Route с новыми данными
+                int[] nextVertices = new int[1];
+                nextVertices.Append(vertex).ToArray(); 
+                int nextWeight = weight + incWeight; 
+                return new Route(nextVertices, nextWeight);
             }
         }
     }
